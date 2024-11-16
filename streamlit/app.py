@@ -51,7 +51,7 @@ if 'investments' not in st.session_state:
     st.session_state.investments = pd.DataFrame(columns=['Category', 'Description', 'Amount', 'Growth Rate', 'Dividend Yield'])
 
 # Input fields for investments
-investment_category = st.selectbox("Category", ["Taxable", "401k/403b", "457b", "IRA", "HSA", "Cryptocurrency", "Roth 401k/403b", "Roth 457b", "Roth IRA", "529 Plan"])
+investment_category = st.selectbox("Category", ["US Stock Market", "US Mid Cap", "US Small Cap"])
 investment_description = st.text_input("Investment Description")
 investment_amount = st.number_input("Investment Amount", min_value=0.0, format="%.2f")
 growth_rate = st.number_input("Growth Rate (%)", min_value=0.0, format="%.2f")
@@ -80,8 +80,8 @@ minimum_payment = st.number_input("Minimum Payment", min_value=0.0, format="%.2f
 
 # Add investment button
 if st.button("Add Debt"):
-    new_dent = pd.DataFrame([[debt_description, debt_amount, investment_amount, interest_rate, minimum_payment]], columns=['Description', 'Amount', 'Interest Rate', 'Minimum Payment'])
-    st.session_state.debts = pd.concat([st.session_state.investments, new_investment], ignore_index=True)
+    new_debt = pd.DataFrame([[debt_description, debt_amount, interest_rate, minimum_payment]], columns=['Description', 'Amount', 'Interest Rate', 'Minimum Payment'])
+    st.session_state.debts = pd.concat([st.session_state.debts, new_debt], ignore_index=True)
 
 # Display the investments
 st.write("Debts:")
@@ -91,16 +91,15 @@ st.title("Fixed Income")
 
 # Create an empty DataFrame for income
 if 'income' not in st.session_state:
-    st.session_state.income = pd.DataFrame(columns=['Type', 'Amount', 'Estimated Hours'])
+    st.session_state.income = pd.DataFrame(columns=['Type', 'Amount'])
 
 # Input fields for income
-income_type = st.selectbox("Income Type", ["Salary", "Hourly Wage"])
+income_type = st.selectbox("Income Type", ["Cash", "Corporate Bonds", "10-year Treasury"])
 income_amount = st.number_input("Amount", min_value=0.0, format="%.2f", key='income_amount')
-estimated_hours = st.number_input("Estimated Hours", min_value=0.0, format="%.2f")
 
 # Add income button
 if st.button("Add Fixed Income"):
-    new_income = pd.DataFrame([[income_type, income_amount, estimated_hours]], columns=['Type', 'Amount', 'Estimated Hours'])
+    new_income = pd.DataFrame([[income_type, income_amount]], columns=['Type', 'Amount'])
     st.session_state.income = pd.concat([st.session_state.income, new_income], ignore_index=True)
 
 # Display the income
@@ -146,78 +145,20 @@ import json
 
 if st.button("get llm response"):
 
-    # create savings embedding query
 
-    savings = []
-
-    print(st.session_state.savings)
-
-    for index, row in st.session_state.savings.iterrows():
-        # create an object for each savings
-        saving = {
-            "description": row['Description'],
-            "amount": row['Amount']
-        }
-
-    assets = []
-
-    for index, row in st.session_state.assets.iterrows():
-        # create an object for each asset
-        asset = {
-            "description": row['Description'],
-            "purchase_price": row['Purchase Price'],
-            "current_value": row['Current Value'],
-            "status": row['Status']
-        }
-
-    investments = []
-
-    for index, row in st.session_state.investments.iterrows():
-        # create an object for each investment
-        investment = {
-            "category": row['Category'],
-            "description": row['Description'],
-            "amount": row['Amount'],
-            "growth_rate": row['Growth Rate'],
-            "dividend_yield": row['Dividend Yield']
-        }
-
-    debts = []
-
-    for index, row in st.session_state.debts.iterrows():
-        # create an object for each debt
-        debt = {
-            "description": row['Description'],
-            "amount": row['Amount'],
-            "interest_rate": row['Interest Rate'],
-            "minimum_payment": row['Minimum Payment']
-        }
-
-    income = []
-
-    for index, row in st.session_state.income.iterrows():
-        # create an object for each income
-        income = {
-            "type": row['Type'],
-            "amount": row['Amount']
-        }
-
-    goals = []
-
-    for index, row in st.session_state.goals.iterrows():
-        # create an object for each goal
-        goal = {
-            "description": row['Description']
-        }
+    # fetch from monte carlo
 
     # Combine all data into a single list of dictionaries
     combined_data = {
         "savings": st.session_state.savings.to_dict(orient='records'),
         "assets": st.session_state.assets.to_dict(orient='records'),
-        "investments": investments,
-        "debts": debts,
-        "income": income,
-        "goals": goals
+        "investments": st.session_state.investments.to_dict(orient='records'),
+        "debts": st.session_state.debts.to_dict(orient='records'),
+        "income": st.session_state.income.to_dict(orient='records'),
+        "investment_knowledge": investment_knowledge,
+        "investment_goal": investment_goal,
+        "income_source": income_source,
+        "investment_risk": investment_risk
     }
     combined_data_str = json.dumps(combined_data, indent=4)
     st.write("Combined Data:")

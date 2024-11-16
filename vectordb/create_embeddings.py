@@ -32,6 +32,8 @@ Answer: Let's think step by step.
 
 Example Response:
 
+
+
 """
 
 prompt = PromptTemplate.from_template(template)

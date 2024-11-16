@@ -21,6 +21,8 @@ if st.button("Add Savings"):
 st.write("Savings:")
 st.dataframe(st.session_state.savings)
 
+
+
 st.title("Assets")
 
 # Create an empty DataFrame for assets
@@ -63,6 +65,27 @@ if st.button("Add Investment"):
 # Display the investments
 st.write("Investments:")
 st.dataframe(st.session_state.investments)
+
+st.title("Debts")
+
+# Create an empty DataFrame for investments
+if 'debts' not in st.session_state:
+    st.session_state.debts = pd.DataFrame(columns=['Description', 'Amount', 'Interest Rate', 'Minimum Payment'])
+
+# Input fields for investments
+debt_description = st.text_input("Debt Description")
+debt_amount = st.number_input("Debt Amount", min_value=0.0, format="%.2f")
+interest_rate = st.number_input("Interest Rate (%)", min_value=0.0, format="%.2f")
+minimum_payment = st.number_input("Minimum Payment", min_value=0.0, format="%.2f")
+
+# Add investment button
+if st.button("Add Debt"):
+    new_dent = pd.DataFrame([[debt_description, debt_amount, investment_amount, interest_rate, minimum_payment]], columns=['Description', 'Amount', 'Interest Rate', 'Minimum Payment'])
+    st.session_state.debts = pd.concat([st.session_state.investments, new_investment], ignore_index=True)
+
+# Display the investments
+st.write("Debts:")
+st.dataframe(st.session_state.debts)
 
 st.title("Fixed Income")
 

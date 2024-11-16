@@ -7,3 +7,5 @@ Starting Instructions
 3. Run the app
     1. Run `source venv/bin/activate`
     2. Start the app with `streamlit run app.py`
+
+Data pulled from https://www.plannersearch.org/financial-advisor/a

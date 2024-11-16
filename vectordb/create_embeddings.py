@@ -24,15 +24,69 @@ from langchain_core.prompts import PromptTemplate
 import pandas as pd
 
 
-question = "Who won the FIFA World Cup in the year 1994? "
+user_data = {
+"savings": [
+{
+"Description": "savings",
+"Amount": 1000.0
+},
+{
+"Description": "checkings",
+"Amount": 500.0
+}
+],
+"assets": [
+{
+"Description": "car",
+"Purchase Price": 2000.0,
+"Current Value": 1500.0,
+"Status": "Fully Owned"
+}
+],
+"investments": [
+{
+"Category": "US Stock Market",
+"Description": "S&P500",
+"Amount": 1000.0,
+"Growth Rate": 4.0,
+"Dividend Yield": 1.0
+}
+],
+"debts": [
+{
+"Description": "Credit card",
+"Amount": 100.0,
+"Interest Rate": 35.0,
+"Minimum Payment": 35.0
+}
+],
+"income": [
+{
+"Type": "Cash",
+"Amount": 50000.0
+}
+],
+"investment_knowledge": "None",
+"investment_goal": "Generating stable income",
+"income_source": "Unstable",
+"investment_risk": "3"
+}
 
-template = """Question: {question}
+question = "What is the capital of Paris?"
+
+template = """
+
+Question: {question}
 
 Answer: Let's think step by step.
 
-Example Response:
+"""
 
+prompt2 = """
 
+Question: What is the capital of Paris?
+
+Answer: Let's think step by step.
 
 """
 
@@ -40,19 +94,21 @@ prompt = PromptTemplate.from_template(template)
 
 llm_chain = prompt | llama_model
 
-print(llm_chain.invoke({"question": question}))
+# print(llm_chain.invoke({"question": question, "user_data": user_data}))
 
-#Embedding Model
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+print(llm_chain.invoke(prompt2))
 
-vector_store = Chroma.from_texts(texts, embedding_model, persist_directory="chroma_db")
-vector_store.embeddings
-# Load the CSV file
-csv_file_path = "/path/to/your/csvfile.csv"
-df = pd.read_csv(csv_file_path)
+# #Embedding Model
+# embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-# Combine the relevant columns into a single text for each row
-texts = df.apply(lambda row: f"Savings: {row['Savings']}, Assets: {row['Assets']}, Investments: {row['Investments']}, Debts: {row['Debts']}, Fixed Income: {row['Fixed Income']}, Response: {row['response']}", axis=1).tolist()
+# vector_store = Chroma.from_texts(texts, embedding_model, persist_directory="chroma_db")
+# vector_store.embeddings
+# # Load the CSV file
+# csv_file_path = "/path/to/your/csvfile.csv"
+# df = pd.read_csv(csv_file_path)
 
-# Create embeddings from the texts
-vector_store = Chroma.from_texts(texts, embedding_model, persist_directory="chroma_db")
+# # Combine the relevant columns into a single text for each row
+# texts = df.apply(lambda row: f"Savings: {row['Savings']}, Assets: {row['Assets']}, Investments: {row['Investments']}, Debts: {row['Debts']}, Fixed Income: {row['Fixed Income']}, Response: {row['response']}", axis=1).tolist()
+
+# # Create embeddings from the texts
+# vector_store = Chroma.from_texts(texts, embedding_model, persist_directory="chroma_db")

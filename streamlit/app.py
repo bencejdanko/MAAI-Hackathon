@@ -107,76 +107,22 @@ if st.button("Add Fixed Income"):
 st.write("Income:")
 st.dataframe(st.session_state.income)
 
-st.title("Estimated Inflation")
+st.title("Financial Goal")
 
-# Input field for estimated inflation
-estimated_inflation = st.number_input("Estimated Inflation Rate (%)", min_value=0.0, format="%.2f")
+# Create an empty DataFrame for goals
+if 'goals' not in st.session_state:
+    st.session_state.goals = pd.DataFrame(columns=['Description'])
 
-# Display the estimated inflation
-st.write(f"Estimated Inflation Rate: {estimated_inflation}%")
+financial_goal = st.text_input("Financial Goal")
 
-# Calculate net worth forecast
-years = np.arange(1, 6)
-net_worth = []
+# Add goal button
+if st.button("Add Goal"):
+    new_goal = pd.DataFrame([[financial_goal]], columns=['Description'])
+    st.session_state.goals = pd.concat([st.session_state.goals, new_goal], ignore_index=True)
 
-# Initial values
-initial_assets_value = st.session_state.assets['Current Value'].sum()
-initial_investments_value = st.session_state.investments['Amount'].sum()
-annual_salary = st.session_state.income[st.session_state.income['Type'] == 'Salary']['Amount'].sum()
-hourly_wage = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Amount'].sum()
-estimated_hours = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Estimated Hours'].sum()
-annual_income = annual_salary + (hourly_wage * estimated_hours * 52)
-
-# Growth rates
-investment_growth_rate = st.session_state.investments['Growth Rate'].mean() / 100
-inflation_rate = estimated_inflation / 100
-
-# Calculate net worth for each year
-for year in years:
-    initial_assets_value *= (1 + inflation_rate)
-    initial_investments_value *= (1 + investment_growth_rate)
-    annual_income *= (1 + inflation_rate)
-    net_worth.append(initial_assets_value + initial_investments_value + annual_income * year)
-
-# Create a DataFrame for net worth
-net_worth_df = pd.DataFrame(data={'Year': years, 'Net Worth': net_worth})
-
-print(net_worth_df)
-
-# Display the net worth forecast
-st.line_chart(net_worth_df.set_index('Year'))
-# Button to generate net worth forecast
-if st.button("Generate Net Worth Forecast"):
-    # Calculate net worth forecast
-    years = np.arange(1, 6)
-    net_worth = []
-
-    # Initial values
-    initial_assets_value = st.session_state.assets['Current Value'].sum()
-    initial_investments_value = st.session_state.investments['Amount'].sum()
-    annual_salary = st.session_state.income[st.session_state.income['Type'] == 'Salary']['Amount'].sum()
-    hourly_wage = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Amount'].sum()
-    estimated_hours = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Estimated Hours'].sum()
-    annual_income = annual_salary + (hourly_wage * estimated_hours * 52)
-
-    # Growth rates
-    investment_growth_rate = st.session_state.investments['Growth Rate'].mean() / 100
-    inflation_rate = estimated_inflation / 100
-
-    # Calculate net worth for each year
-    for year in years:
-        initial_assets_value *= (1 + inflation_rate)
-        initial_investments_value *= (1 + investment_growth_rate)
-        annual_income *= (1 + inflation_rate)
-        net_worth.append(initial_assets_value + initial_investments_value + annual_income * year)
-
-    # Create a DataFrame for net worth
-    net_worth_df = pd.DataFrame(data={'Year': years, 'Net Worth': net_worth})
-
-    print(net_worth_df.head)
-
-    # Display the net worth forecast
-    st.line_chart(net_worth_df.set_index('Year'))
+# Display the goals
+st.write("Goals:")
+st.dataframe(st.session_state.goals)
 
 if st.button("get llm response"):
 
@@ -190,5 +136,58 @@ if st.button("get llm response"):
             "description": row['Description'],
             "amount": row['Amount']
         }
+
+    assets = []
+
+    for index, row in st.session_state.assets.iterrows():
+        # create an object for each asset
+        asset = {
+            "description": row['Description'],
+            "purchase_price": row['Purchase Price'],
+            "current_value": row['Current Value'],
+            "status": row['Status']
+        }
+
+    investments = []
+
+    for index, row in st.session_state.investments.iterrows():
+        # create an object for each investment
+        investment = {
+            "category": row['Category'],
+            "description": row['Description'],
+            "amount": row['Amount'],
+            "growth_rate": row['Growth Rate'],
+            "dividend_yield": row['Dividend Yield']
+        }
+
+    debts = []
+
+    for index, row in st.session_state.debts.iterrows():
+        # create an object for each debt
+        debt = {
+            "description": row['Description'],
+            "amount": row['Amount'],
+            "interest_rate": row['Interest Rate'],
+            "minimum_payment": row['Minimum Payment']
+        }
+
+    income = []
+
+    for index, row in st.session_state.income.iterrows():
+        # create an object for each income
+        income = {
+            "type": row['Type'],
+            "amount": row['Amount'],
+            "estimated_hours": row['Estimated Hours']
+        }
+
+    goals = []
+
+    for index, row in st.session_state.goals.iterrows():
+        # create an object for each goal
+        goal = {
+            "description": row['Description']
+        }
+
 
     # create assets embedding query

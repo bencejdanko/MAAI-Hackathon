@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 st.title("Savings")
 
@@ -41,3 +42,115 @@ if st.button("Add Asset"):
 st.write("Assets:")
 st.dataframe(st.session_state.assets)
 
+st.title("Investments")
+
+# Create an empty DataFrame for investments
+if 'investments' not in st.session_state:
+    st.session_state.investments = pd.DataFrame(columns=['Category', 'Description', 'Amount', 'Growth Rate', 'Dividend Yield'])
+
+# Input fields for investments
+investment_category = st.selectbox("Category", ["Taxable", "401k/403b", "457b", "IRA", "HSA", "Cryptocurrency", "Roth 401k/403b", "Roth 457b", "Roth IRA", "529 Plan"])
+investment_description = st.text_input("Investment Description")
+investment_amount = st.number_input("Investment Amount", min_value=0.0, format="%.2f")
+growth_rate = st.number_input("Growth Rate (%)", min_value=0.0, format="%.2f")
+dividend_yield = st.number_input("Dividend Yield (%)", min_value=0.0, format="%.2f")
+
+# Add investment button
+if st.button("Add Investment"):
+    new_investment = pd.DataFrame([[investment_category, investment_description, investment_amount, growth_rate, dividend_yield]], columns=['Category', 'Description', 'Amount', 'Growth Rate', 'Dividend Yield'])
+    st.session_state.investments = pd.concat([st.session_state.investments, new_investment], ignore_index=True)
+
+# Display the investments
+st.write("Investments:")
+st.dataframe(st.session_state.investments)
+
+st.title("Fixed Income")
+
+# Create an empty DataFrame for income
+if 'income' not in st.session_state:
+    st.session_state.income = pd.DataFrame(columns=['Type', 'Amount', 'Estimated Hours'])
+
+# Input fields for income
+income_type = st.selectbox("Income Type", ["Salary", "Hourly Wage"])
+income_amount = st.number_input("Amount", min_value=0.0, format="%.2f", key='income_amount')
+estimated_hours = st.number_input("Estimated Hours", min_value=0.0, format="%.2f")
+
+# Add income button
+if st.button("Add Fixed Income"):
+    new_income = pd.DataFrame([[income_type, income_amount, estimated_hours]], columns=['Type', 'Amount', 'Estimated Hours'])
+    st.session_state.income = pd.concat([st.session_state.income, new_income], ignore_index=True)
+
+# Display the income
+st.write("Income:")
+st.dataframe(st.session_state.income)
+
+st.title("Estimated Inflation")
+
+# Input field for estimated inflation
+estimated_inflation = st.number_input("Estimated Inflation Rate (%)", min_value=0.0, format="%.2f")
+
+# Display the estimated inflation
+st.write(f"Estimated Inflation Rate: {estimated_inflation}%")
+
+# Calculate net worth forecast
+years = np.arange(1, 6)
+net_worth = []
+
+# Initial values
+initial_assets_value = st.session_state.assets['Current Value'].sum()
+initial_investments_value = st.session_state.investments['Amount'].sum()
+annual_salary = st.session_state.income[st.session_state.income['Type'] == 'Salary']['Amount'].sum()
+hourly_wage = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Amount'].sum()
+estimated_hours = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Estimated Hours'].sum()
+annual_income = annual_salary + (hourly_wage * estimated_hours * 52)
+
+# Growth rates
+investment_growth_rate = st.session_state.investments['Growth Rate'].mean() / 100
+inflation_rate = estimated_inflation / 100
+
+# Calculate net worth for each year
+for year in years:
+    initial_assets_value *= (1 + inflation_rate)
+    initial_investments_value *= (1 + investment_growth_rate)
+    annual_income *= (1 + inflation_rate)
+    net_worth.append(initial_assets_value + initial_investments_value + annual_income * year)
+
+# Create a DataFrame for net worth
+net_worth_df = pd.DataFrame(data={'Year': years, 'Net Worth': net_worth})
+
+print(net_worth_df)
+
+# Display the net worth forecast
+st.line_chart(net_worth_df.set_index('Year'))
+# Button to generate net worth forecast
+if st.button("Generate Net Worth Forecast"):
+    # Calculate net worth forecast
+    years = np.arange(1, 6)
+    net_worth = []
+
+    # Initial values
+    initial_assets_value = st.session_state.assets['Current Value'].sum()
+    initial_investments_value = st.session_state.investments['Amount'].sum()
+    annual_salary = st.session_state.income[st.session_state.income['Type'] == 'Salary']['Amount'].sum()
+    hourly_wage = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Amount'].sum()
+    estimated_hours = st.session_state.income[st.session_state.income['Type'] == 'Hourly Wage']['Estimated Hours'].sum()
+    annual_income = annual_salary + (hourly_wage * estimated_hours * 52)
+
+    # Growth rates
+    investment_growth_rate = st.session_state.investments['Growth Rate'].mean() / 100
+    inflation_rate = estimated_inflation / 100
+
+    # Calculate net worth for each year
+    for year in years:
+        initial_assets_value *= (1 + inflation_rate)
+        initial_investments_value *= (1 + investment_growth_rate)
+        annual_income *= (1 + inflation_rate)
+        net_worth.append(initial_assets_value + initial_investments_value + annual_income * year)
+
+    # Create a DataFrame for net worth
+    net_worth_df = pd.DataFrame(data={'Year': years, 'Net Worth': net_worth})
+
+    print(net_worth_df.head)
+
+    # Display the net worth forecast
+    st.line_chart(net_worth_df.set_index('Year'))

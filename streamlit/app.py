@@ -107,6 +107,41 @@ if st.button("Add Fixed Income"):
 st.write("Income:")
 st.dataframe(st.session_state.income)
 
+st.title('Investment Experience')
+
+# Dropdown (selectbox) with options
+investment_knowledge = st.selectbox(
+    "How would you describe your experience in investing?",
+    ("None", "Limited", "Good", "Extensive")
+)
+
+# Display the selected option
+st.write(f'Selection: {investment_knowledge}')
+
+st.title('Investment Goals')
+investment_goal = st.selectbox("What's your primary investment goal?",
+            ("None","Preserving my capital with minimal risk", \
+            "Generating stable income", \
+            "Achieving moderate growth while limiting risk", \
+            "Maximizing long-term growth potential")
+)
+st.write(f'Selection: {investment_goal}')
+
+st.title('Income Source')
+income_source = st.selectbox("How stable is your current and future income?",
+            ("None","Unstable", \
+            "Somewhat Stable", \
+            "Stable"))
+
+st.write(f'Selection: {income_source}')
+
+st.title('Investment Risk')
+investment_risk = st.selectbox("On a scale of 10, what is your risk tolerance?",
+            ("1 - Least Risk", "2", "3", "4", "5 - Medium Risk", "6",\
+            "7", "8", "9", "10 - Most Risk"))
+
+st.write(f'Selection: {investment_risk}')
+
 st.title("Financial Goal")
 
 # Create an empty DataFrame for goals

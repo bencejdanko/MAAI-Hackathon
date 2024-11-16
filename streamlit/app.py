@@ -142,28 +142,15 @@ investment_risk = st.selectbox("On a scale of 10, what is your risk tolerance?",
 
 st.write(f'Selection: {investment_risk}')
 
-st.title("Financial Goal")
-
-# Create an empty DataFrame for goals
-if 'goals' not in st.session_state:
-    st.session_state.goals = pd.DataFrame(columns=['Description'])
-
-financial_goal = st.text_input("Financial Goal")
-
-# Add goal button
-if st.button("Add Goal"):
-    new_goal = pd.DataFrame([[financial_goal]], columns=['Description'])
-    st.session_state.goals = pd.concat([st.session_state.goals, new_goal], ignore_index=True)
-
-# Display the goals
-st.write("Goals:")
-st.dataframe(st.session_state.goals)
+import json
 
 if st.button("get llm response"):
 
     # create savings embedding query
 
     savings = []
+
+    print(st.session_state.savings)
 
     for index, row in st.session_state.savings.iterrows():
         # create an object for each savings
@@ -212,8 +199,7 @@ if st.button("get llm response"):
         # create an object for each income
         income = {
             "type": row['Type'],
-            "amount": row['Amount'],
-            "estimated_hours": row['Estimated Hours']
+            "amount": row['Amount']
         }
 
     goals = []
@@ -224,5 +210,15 @@ if st.button("get llm response"):
             "description": row['Description']
         }
 
-
-    # create assets embedding query
+    # Combine all data into a single list of dictionaries
+    combined_data = {
+        "savings": st.session_state.savings.to_dict(orient='records'),
+        "assets": st.session_state.assets.to_dict(orient='records'),
+        "investments": investments,
+        "debts": debts,
+        "income": income,
+        "goals": goals
+    }
+    combined_data_str = json.dumps(combined_data, indent=4)
+    st.write("Combined Data:")
+    st.text(combined_data_str)

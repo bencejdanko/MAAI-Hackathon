@@ -177,3 +177,18 @@ if st.button("Generate Net Worth Forecast"):
 
     # Display the net worth forecast
     st.line_chart(net_worth_df.set_index('Year'))
+
+if st.button("get llm response"):
+
+    # create savings embedding query
+
+    savings = []
+
+    for index, row in st.session_state.savings.iterrows():
+        # create an object for each savings
+        saving = {
+            "description": row['Description'],
+            "amount": row['Amount']
+        }
+
+    # create assets embedding query

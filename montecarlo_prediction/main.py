@@ -3,15 +3,15 @@ import time
 from flask import Flask, jsonify, request
 
 url = "https://api.skyvern.com/api/v1/tasks"
-headers = {"x-api-key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4NzY3NDI5ODQsInN1YiI6Im9fMzI2ODQ2MDc3MDEzMjM5MTI2In0.gMOKy9aa8ftHaFkVSz1EHx4G_3qllP9Vpc-eT4yIedA"}
+headers = {""}
 
 body = {"url": "https://www.portfoliovisualizer.com/monte-carlo-simulation",
         "navigation_goal": f"Enter the asset class and its allocations from the user payload and run simulation",
         "proxy_location": "RESIDENTIAL",
-        # "navigation_payload": {
-        #     "US Stock Market": "40%",
-        #     "10-year Treasury": "60%",
-        # },
+        "navigation_payload": {
+            "US Stock Market": "40%",
+            "10-year Treasury": "60%",
+        },
         "data_extraction_goal": "Extract only the Portfolio Balance graph data, and the Expected Annual Return table"
     }
 
